@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# personal script to extract the
+# grouvee export link from my mail
+#
+# this is run manually when I get
+# the mail notification that my export
+# has finished
+
+set -u
+set -e
+set -o pipefail
+
+TO_DIR="${HPIDATA}/grouvee"
+mkdir -p "${TO_DIR}"
+
+OUTPUT_FILE="${TO_DIR}/$(date +"%s").csv"
+
+notmuch new
+
+notmuch show subject:"grouvee export has finished" |
+	grep -m1 -i "it is located here" |
+	urlscan -n |
+	head -n 1 |
+	xargs -r -I {} curl -sL --output "${OUTPUT_FILE}" "{}"
+
+# make sure if actually downloaded -- assuming I have at least 25 games
+if (($(wc -l <"${OUTPUT_FILE}") < 25)); then
+	echo "Failed to download, contents:"
+	cat "${OUTPUT_FILE}"
+	rm -vf "${OUTPUT_FILE}"
+fi
+
+if [[ -f "${OUTPUT_FILE}" ]]; then
+	head "${OUTPUT_FILE}"
+	figlet success\!
+else
+	exit 1
+fi
