@@ -1,6 +1,6 @@
 # grouvee_export
 
-This is a partial [grouvee](https://www.grouvee.com/) (a video game database website) exporter
+This is a partial [grouvee](https://www.grouvee.com/) (a video game database website) exporter.
 
 To save your data from Grouvee:
 
@@ -10,9 +10,11 @@ To save your data from Grouvee:
 
 The python script installed here handles the first 2 steps, but the last depends on if you have some way to access your email programatically. Personally, I use the script in [`bin`](./bin)
 
+This also includes a command to parse the resulting CSV file, once you've downloaded it to your computer
+
 ## Installation
 
-Requires `python3.6+`
+Requires `python3.7+`
 
 To install with pip, run:
 
@@ -29,9 +31,13 @@ username: grouveeUsername
 password: grouveePassword
 ```
 
-Then run: `python3 -m grouvee_export -c /path/to/chromedriver` -- which logs you in using your credentials and goes to the export page. After about 10 minutes, an email should be sent to you with a link to the CSV file
+Then run: `python3 -m grouvee_export export -c /path/to/chromedriver` -- which logs you in using your credentials and goes to the export page. After about 10 minutes, an email should be sent to you with a link to the CSV file
 
-TODO: add CSV parser
+After you've downloaded the CSV file, you can use the `python3 -m grouvee_export parse` command to parse the export:
+
+```
+$ python3 -m grouvee_export parse ~/data/grouvee/1621762287.csv | jq '.[0]'
+```
 
 ### Tests
 
