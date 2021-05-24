@@ -2,10 +2,9 @@ from pathlib import Path
 from typing import Optional
 
 import click
-import orjson
 
 from .core import login_and_export
-from .dal import parse_export
+from .dal import parse_export, serialize_export
 
 
 @click.group(name="grouvee_export")
@@ -48,7 +47,7 @@ def parse(csv_export: str) -> None:
     """
     Parse information out of the CSV file into JSON
     """
-    click.echo(orjson.dumps(list(parse_export(Path(csv_export)))))
+    click.echo(serialize_export(parse_export(Path(csv_export))))
 
 
 if __name__ == "__main__":
