@@ -2,11 +2,9 @@ import csv
 import json
 from time import strptime
 from pathlib import Path
+import dataclasses
 from typing import Iterator, Optional, Tuple, List, NamedTuple, Any, Iterable, Dict
 from datetime import datetime, date, timezone
-from dataclasses import dataclass, field
-
-import orjson
 
 Url = str
 MetadataTuple = Tuple[str, Url]
@@ -19,7 +17,7 @@ class ShelfAction(NamedTuple):
     url: str
 
 
-@dataclass
+@dataclasses.dataclass
 class Game:
     grouvee_id: int
     name: str
@@ -28,11 +26,11 @@ class Game:
     release_date: Optional[date] = None
     rating: Optional[int] = None
     review: Optional[str] = None
-    shelves: List[ShelfAction] = field(default_factory=list)
-    genres: Metadata = field(default_factory=dict)
-    franchises: Metadata = field(default_factory=dict)
-    developers: Metadata = field(default_factory=dict)
-    publishers: Metadata = field(default_factory=dict)
+    shelves: List[ShelfAction] = dataclasses.field(default_factory=list)
+    genres: Metadata = dataclasses.field(default_factory=dict)
+    franchises: Metadata = dataclasses.field(default_factory=dict)
+    developers: Metadata = dataclasses.field(default_factory=dict)
+    publishers: Metadata = dataclasses.field(default_factory=dict)
 
     @property
     def datetimes(self) -> Iterator[datetime]:
@@ -133,10 +131,14 @@ def parse_export(path: Path) -> Iterator[Game]:
 
 
 def _default(data: Any) -> Any:
-    if hasattr(data, "_asdict") and callable(data._asdict):
+    if isinstance(data, datetime) or isinstance(data, date):
+        return str(data)
+    elif hasattr(data, "_asdict") and callable(data._asdict):
         return data._asdict()
+    elif dataclasses.is_dataclass(data):
+        return dataclasses.asdict(data)
     raise TypeError(f"Could not serialize {data} {data.__class__.__name__}")
 
 
 def serialize_export(data: Iterable[Game]) -> str:
-    return orjson.dumps(list(data), default=_default).decode("utf-8")
+    return json.dumps(list(data), default=_default)
