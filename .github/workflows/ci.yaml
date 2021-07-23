@@ -26,7 +26,7 @@ jobs:
           pip install mypy
       - name: Run mypy
         run: |
-          mypy --install-types --non-interactive
+          mypy --install-types --non-interactive .
           mypy ./grouvee_export
       - name: Import Test
         run: |
