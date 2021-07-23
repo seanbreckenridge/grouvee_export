@@ -1,5 +1,6 @@
 import csv
 import json
+import re
 from time import strptime
 from pathlib import Path
 import dataclasses
@@ -94,8 +95,23 @@ def parse_export(path: Path) -> Iterator[Game]:
 
             rel: Optional[date] = None
             if release_date:
-                d = strptime(release_date, r"%Y-%m-%d")
-                rel = date(year=d.tm_year, month=d.tm_mon, day=d.tm_mday)
+                relyear = -1  # sentinel
+                relmonth = 1
+                relday = 1
+                try:
+                    d = strptime(release_date, r"%Y-%m-%d")
+                    relyear = d.tm_year
+                    relmonth = d.tm_mon
+                    relday = d.tm_mday
+                except ValueError:
+                    # some items are formatted quarterly, like 2010-Q3
+                    # estimate the month for that value
+                    qp = re.match(r"(\d{4})-Q(\d)", release_date)
+                    if qp:
+                        relyear = int(qp.group(1))
+                        relmonth = int(qp.group(2)) * 3  # e.g. Q3 == 9; September
+                if relyear > 0:  # sentinel check
+                    rel = date(year=relyear, month=relmonth, day=relday)
 
             sh: List[ShelfAction] = []
             if shelves:
