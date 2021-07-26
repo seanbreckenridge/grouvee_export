@@ -70,6 +70,28 @@ def _parse_metadata(sdata: str) -> Iterator[MetadataTuple]:
             yield (name, data["url"])
 
 
+def _parse_release_date(rel: Optional[str]) -> Optional[date]:
+    if rel is None or rel.strip() == "":
+        return None
+    try:
+        d = strptime(rel, r"%Y-%m-%d")
+        return date(year=d.tm_year, month=d.tm_mon, day=d.tm_mday)
+    except ValueError:
+        # some items are formatted quarterly, like 2010-Q3
+        # estimate the month for that value
+        qp = re.match(r"(\d{4})-Q(\d)", rel)
+        if qp:
+            est_month = int(qp.group(2)) * 3  # e.g. Q3 == 9; September
+            return date(year=int(qp.group(1)), month=est_month, day=1)
+    return None
+
+
+def test_parse_release_date() -> None:
+    assert _parse_release_date("2020-5-2") == date(2020, 5, 2)
+    assert _parse_release_date("2015-11-20") == date(2015, 11, 20)
+    assert _parse_release_date("2010-Q3") == date(2010, 9, 1)
+
+
 def parse_export(path: Path) -> Iterator[Game]:
     with path.open("r") as f:
         csv_reader = csv.reader(f)
@@ -93,25 +115,7 @@ def parse_export(path: Path) -> Iterator[Game]:
                 giantbomb_id,
             ) = line
 
-            rel: Optional[date] = None
-            if release_date:
-                relyear = -1  # sentinel
-                relmonth = 1
-                relday = 1
-                try:
-                    d = strptime(release_date, r"%Y-%m-%d")
-                    relyear = d.tm_year
-                    relmonth = d.tm_mon
-                    relday = d.tm_mday
-                except ValueError:
-                    # some items are formatted quarterly, like 2010-Q3
-                    # estimate the month for that value
-                    qp = re.match(r"(\d{4})-Q(\d)", release_date)
-                    if qp:
-                        relyear = int(qp.group(1))
-                        relmonth = int(qp.group(2)) * 3  # e.g. Q3 == 9; September
-                if relyear > 0:  # sentinel check
-                    rel = date(year=relyear, month=relmonth, day=relday)
+            rel: Optional[date] = _parse_release_date(release_date)
 
             sh: List[ShelfAction] = []
             if shelves:
