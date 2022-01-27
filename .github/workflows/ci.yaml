@@ -29,8 +29,7 @@ jobs:
           pytest ./grouvee_export/*.py
       - name: Run mypy
         run: |
-          mypy --install-types --non-interactive .
-          mypy ./grouvee_export
+          mypy --install-types --non-interactive ./grouvee_export
       - name: Import Test
         run: |
           python3 -c "import grouvee_export.__main__"
