@@ -51,6 +51,7 @@ def create_driver(chromedriver_path: Optional[str] = None) -> WebDriver:
 
 
 def login(driver: WebDriver, creds: Credentials) -> None:
+    eprint("Logging in to Grouvee...")
     driver.get(GROUVEE_LOGIN_PAGE)
     driver.find_element_by_id(EMAIL_ID).send_keys(creds.username)
     driver.find_element_by_id(PASSWORD_ID).send_keys(creds.password)
@@ -58,6 +59,7 @@ def login(driver: WebDriver, creds: Credentials) -> None:
 
 
 def export(driver: WebDriver) -> None:
+    eprint("Requesting export...")
     driver.get(GROUVEE_EXPORT_PAGE)
 
 
@@ -76,6 +78,7 @@ def login_and_export(
         driver = create_driver(chromedriver_location)
         login(driver, creds)
         export(driver)
+        eprint("Done!")
     finally:
         if driver:
             driver.quit()
