@@ -61,16 +61,7 @@ class Game:
 
 def _parse_grouvee_datetime(ds: str) -> datetime:
     utc_naive = datetime.fromisoformat(ds.rstrip("Z"))
-    return datetime(
-        utc_naive.year,
-        utc_naive.month,
-        utc_naive.day,
-        utc_naive.hour,
-        utc_naive.minute,
-        utc_naive.second,
-        utc_naive.microsecond,
-        tzinfo=timezone.utc,
-    )
+    return utc_naive.replace(tzinfo=timezone.utc)
 
 
 def _parse_metadata(sdata: str) -> Iterator[MetadataTuple]:
