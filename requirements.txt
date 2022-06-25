@@ -1,4 +1,4 @@
 click>=7.0
 logzero
-selenium
+selenium>=4.3.0
 PyYAML
