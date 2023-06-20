@@ -8,6 +8,7 @@ from functools import partial
 import click
 import yaml
 from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 
 default_local_dir = os.path.join(Path.home(), ".local", "share")
@@ -45,10 +46,11 @@ Provide a path to the chromedriver binary with the -c flag"""
 
 
 def create_driver(chromedriver_path: Optional[str] = None) -> WebDriver:
-    if chromedriver_path is None:
-        chromedriver_path = shutil.which("chromedriver")
-    assert chromedriver_path is not None, NO_CHROMEDRIVER_ERR
-    return WebDriver(chromedriver_path)
+    options = Options()
+    if chromedriver_path is not None:
+        options.binary_location = chromedriver_path
+    dr = WebDriver(options=options)
+    return dr
 
 
 def login(driver: WebDriver, creds: Credentials) -> None:
