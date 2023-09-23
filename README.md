@@ -8,7 +8,7 @@ To save your data from Grouvee:
 1. Go to <https://www.grouvee.com/export/>
 1. Get the download link sent to your email to download the CSV export
 
-The python script installed here handles the first 2 steps, but the last depends on if you have some way to access your email programatically. Personally, I use the script in [`bin`](./bin), running it once [evry 2 months](https://github.com/seanbreckenridge/dotfiles/blob/53919cd438659960dd71177f9cfc4ee27007562e/.local/scripts/linux/housekeeping#L46)
+The python script installed here handles the first 2 steps, but the last depends on if you have some way to access your email programmatically. Personally, I use the script in [`bin`](./bin), running it once [evry 2 months](https://github.com/seanbreckenridge/dotfiles/blob/53919cd438659960dd71177f9cfc4ee27007562e/.local/scripts/linux/housekeeping#L46)
 
 This also includes a command to parse the resulting CSV file, once you've downloaded it to your computer
 
